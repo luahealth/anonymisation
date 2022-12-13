@@ -78,7 +78,7 @@ def main_ano(string: str, thesaurus: str):
     :return: dictionary with all NEs
     """
 
-    # read_company_thesaurus(thesaurus)
+    read_company_thesaurus(thesaurus)
 
 
     m = re.search(r'\w+$', string)
