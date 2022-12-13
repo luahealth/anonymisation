@@ -105,7 +105,6 @@ def main_ano(string: str, thesaurus: str):
     # dicti2 = Merge(dicti, tmp)
     # print(dicti2)
 
-    print(dicti)
 
     lowerstring = string.lower()
 
