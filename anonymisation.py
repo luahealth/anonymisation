@@ -1,8 +1,9 @@
 import en_core_web_lg
-import re
 from flair.data import Sentence
 from flair.models import SequenceTagger
 import nltk
+import re
+import truecase
 
 nltk.download('punkt')
 nltk.download('averaged_perceptron_tagger')
@@ -11,7 +12,9 @@ nltk.download('words')
 nlp = en_core_web_lg.load()
 tagger = SequenceTagger.load("flair/ner-english")
 
+
 dicti = {}
+
 
 
 def spacy_ano(string: str):
@@ -22,7 +25,8 @@ def spacy_ano(string: str):
     """
     text = nlp(string)
     for X in text.ents:
-        dicti[X.text] = X.label_
+        # print(X.text, X.label_)
+        dicti[X.text.lower()] = X.label_
 
 
 def nltk_ano(string: str):
@@ -33,9 +37,10 @@ def nltk_ano(string: str):
     """
     for chunk in nltk.ne_chunk(nltk.pos_tag(nltk.word_tokenize(string))):
         if hasattr(chunk, 'label'):
+            # print(chunk.label(), ' '.join(c[0] for c in chunk))
             label = chunk.label()
             lex = " ".join(c[0] for c in chunk)
-            dicti[lex] = label
+            dicti[lex.lower()] = label
 
 
 def flair_ano(string: str):
@@ -47,24 +52,63 @@ def flair_ano(string: str):
     sentence = Sentence(string)
     tagger.predict(sentence)
     for entity in sentence.get_spans('ner'):
-        dicti[entity.text] = entity.get_label("ner").value
+        dicti[entity.text.lower()] = entity.get_label("ner").value
+
+def Merge(dict1, dict2):
+    res = dict1 | dict2
+    return res
+
+def read_company_thesaurus(thesaurus : str):
+    """
+    fuction to construct dictionary with company names
+    :param thesaurus: path to thesaurus file with company names
+    :return: dictionary
+    """
+    temp_dict = {}
+    with open(thesaurus) as thesaurus_file:
+        for line in thesaurus_file.readlines():
+            dicti[line.replace('\n', '').lower()]="COMP"
 
 
-def main_ano(string: str):
+def main_ano(string: str, thesaurus: str):
     """
     main function for initialising named entity recognition
     :param string: string used to extract the named entities
+    :param thesaurus: path to company names
     :return: dictionary with all NEs
     """
-    string_variance = [string, string.upper(), string.lower()]
 
+    # read_company_thesaurus(thesaurus)
+
+
+    m = re.search(r'\w+$', string)
+    if m is not None:
+        string = string+"."
+
+    # string_variance = [string, string.upper(), string.title(), string.lower()]
+    string = truecase.get_true_case(string)
+    string_variance = [string]
     for sent in string_variance:
         spacy_ano(sent)
         nltk_ano(sent)
         flair_ano(sent)
 
-    for key in dicti:
-        compiled = re.compile(re.escape(key), re.IGNORECASE)
-        string = compiled.sub(dicti[key], string)
+    # tmp = {}
+    # for k,v in dicti.items():
+    #     if re.search(r' ', k):
+    #         ws = k.split()
+    #         for words in ws:
+    #             print(words,v)
+    #             tmp[words] = v
+    # print(dicti)
+    # print(tmp)
+    # dicti2 = Merge(dicti, tmp)
+    # print(dicti2)
 
-    return string
+    print(dicti)
+
+    lowerstring = string.lower()
+
+    for key in dicti:
+        lowerstring = lowerstring.replace(key, dicti[key])
+    return lowerstring
