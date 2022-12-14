@@ -1,16 +1,19 @@
-import en_core_web_lg
 from flair.data import Sentence
 from flair.models import SequenceTagger
 import nltk
 import re
 import truecase
+import spacy
 
 nltk.download('punkt', quiet=True)
 nltk.download('averaged_perceptron_tagger', quiet=True)
 nltk.download('maxent_ne_chunker', quiet=True)
 nltk.download('words', quiet=True)
-nlp = en_core_web_lg.load()
+
+spacy.cli.download("en_core_web_lg")
+nlp = spacy.load("en_core_web_lg")
 tagger = SequenceTagger.load("flair/ner-english")
+
 
 dicti = {}
 

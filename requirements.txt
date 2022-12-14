@@ -1,5 +1,4 @@
-nltk
-streamlit
-flair
-en_core_web_lg
-truecase
+nltk==3.8
+flair==0.11.3
+spacy==3.4.3
+truecase==0.0.14
