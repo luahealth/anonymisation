@@ -8,7 +8,7 @@ This is a python based service for redacting sensitive information from text.
 
 ### Installation  
 1. [Optional] Setup and activate a virtual environment 
-2. Install the required packages by running `pip -r requirements`
+2. Install the required packages by running `pip install -r requirements.txt`
 
 
 ## Usage 
