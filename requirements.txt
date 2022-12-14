@@ -1,0 +1,5 @@
+nltk
+streamlit
+flair
+en_core_web_lg
+truecase
