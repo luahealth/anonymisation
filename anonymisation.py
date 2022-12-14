@@ -5,17 +5,14 @@ import nltk
 import re
 import truecase
 
-nltk.download('punkt')
-nltk.download('averaged_perceptron_tagger')
-nltk.download('maxent_ne_chunker')
-nltk.download('words')
+nltk.download('punkt', quiet=True)
+nltk.download('averaged_perceptron_tagger', quiet=True)
+nltk.download('maxent_ne_chunker', quiet=True)
+nltk.download('words', quiet=True)
 nlp = en_core_web_lg.load()
 tagger = SequenceTagger.load("flair/ner-english")
 
-
 dicti = {}
-
-
 
 def spacy_ano(string: str):
     """
@@ -80,31 +77,16 @@ def main_ano(string: str, thesaurus: str):
 
     read_company_thesaurus(thesaurus)
 
-
     m = re.search(r'\w+$', string)
     if m is not None:
         string = string+"."
 
-    # string_variance = [string, string.upper(), string.title(), string.lower()]
     string = truecase.get_true_case(string)
     string_variance = [string]
     for sent in string_variance:
         spacy_ano(sent)
         nltk_ano(sent)
         flair_ano(sent)
-
-    # tmp = {}
-    # for k,v in dicti.items():
-    #     if re.search(r' ', k):
-    #         ws = k.split()
-    #         for words in ws:
-    #             print(words,v)
-    #             tmp[words] = v
-    # print(dicti)
-    # print(tmp)
-    # dicti2 = Merge(dicti, tmp)
-    # print(dicti2)
-
 
     lowerstring = string.lower()
 
