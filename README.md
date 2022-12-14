@@ -1,7 +1,17 @@
 # Anonymisation
 
+This is a python based service for redacting sensitive information from text.   
+
+## Setup / Install 
+### Prerequisites  
+* Python 3.8 or 3.9  
+
+### Installation  
+1. [Optional] Setup and activate a virtual environment 
+2. Install the required packages by running `pip -r requirements`
+
+
 ## Usage 
-Language is complex and nuanced. This service attempts to balance removing sensitive information, while leaving non-sensitive information intact. 
 
 `test_ano.py` gives an example usage. 
 
