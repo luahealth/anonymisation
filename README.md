@@ -1,7 +1,17 @@
 # Anonymisation
 
+This is a python based service for redacting sensitive information from text.   
+
+## Setup / Install 
+### Prerequisites  
+* Python 3.8 or 3.9  
+
+### Installation  
+1. [Optional] Setup and activate a virtual environment 
+2. Install the required packages by running `pip install -r requirements.txt`
+
+
 ## Usage 
-Language is complex and nuanced. This service attempts to balance removing sensitive information, while leaving non-sensitive information intact. 
 
 `test_ano.py` gives an example usage. 
 
@@ -13,3 +23,13 @@ A possible workflow would be;
  1. Create a python file and import `from anonymisation import main_ano`
  2. Add your own code to read your data and iterate over it 
  3. For each piece of text (this could be a message, an email etc) run `main_ano(string,thesaurus_path)` and save the output
+ 
+ 
+## License 
+Copyright 2022 
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
