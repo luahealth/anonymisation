@@ -4,18 +4,30 @@ import nltk
 import re
 import truecase
 import spacy
+import ctranslate2
+import sentencepiece as spm
+import en_core_web_lg
+import urllib.request
+import os
+
+
+if not os.path.isfile('ct2_model/model.bin'):
+    urllib.request.urlretrieve("https://server1.nlp.insight-centre.org/pp/model.bin", "ct2_model/model.bin")
+
 
 nltk.download('punkt', quiet=True)
 nltk.download('averaged_perceptron_tagger', quiet=True)
 nltk.download('maxent_ne_chunker', quiet=True)
 nltk.download('words', quiet=True)
 
-spacy.cli.download("en_core_web_lg")
 nlp = spacy.load("en_core_web_lg")
 tagger = SequenceTagger.load("flair/ner-english")
 
-
 dicti = {}
+translator = ctranslate2.Translator("ct2_model/")
+sp_estl = spm.SentencePieceProcessor("ct2_model/spm.estl.model")
+sp_en = spm.SentencePieceProcessor("ct2_model/spm.en.model")
+
 
 def spacy_ano(string: str):
     """
@@ -25,7 +37,6 @@ def spacy_ano(string: str):
     """
     text = nlp(string)
     for X in text.ents:
-        # print(X.text, X.label_)
         dicti[X.text.lower()] = X.label_
 
 
@@ -37,7 +48,6 @@ def nltk_ano(string: str):
     """
     for chunk in nltk.ne_chunk(nltk.pos_tag(nltk.word_tokenize(string))):
         if hasattr(chunk, 'label'):
-            # print(chunk.label(), ' '.join(c[0] for c in chunk))
             label = chunk.label()
             lex = " ".join(c[0] for c in chunk)
             dicti[lex.lower()] = label
@@ -54,20 +64,16 @@ def flair_ano(string: str):
     for entity in sentence.get_spans('ner'):
         dicti[entity.text.lower()] = entity.get_label("ner").value
 
-def Merge(dict1, dict2):
-    res = dict1 | dict2
-    return res
 
-def read_company_thesaurus(thesaurus : str):
+def read_company_thesaurus(thesaurus: str):
     """
     fuction to construct dictionary with company names
     :param thesaurus: path to thesaurus file with company names
     :return: dictionary
     """
-    temp_dict = {}
     with open(thesaurus) as thesaurus_file:
         for line in thesaurus_file.readlines():
-            dicti[line.replace('\n', '').lower()]="COMP"
+            dicti[line.replace('\n', '').lower()] = "COMP"
 
 
 def main_ano(string: str, thesaurus: str):
@@ -82,17 +88,24 @@ def main_ano(string: str, thesaurus: str):
 
     m = re.search(r'\w+$', string)
     if m is not None:
-        string = string+"."
+        string = string + "."
 
-    string = truecase.get_true_case(string)
-    string_variance = [string]
-    for sent in string_variance:
-        spacy_ano(sent)
-        nltk_ano(sent)
-        flair_ano(sent)
+    input_tokens = sp_estl.encode(string, out_type=str)
+    results = translator.translate_batch([input_tokens])
+    output_tokens = results[0].hypotheses[0]
+    output_text = sp_en.decode(output_tokens)
 
-    lowerstring = string.lower()
+    string_tc = truecase.get_true_case(output_text)
+    spacy_ano(string_tc)
+    nltk_ano(string_tc)
+    flair_ano(string_tc)
+
+    lowerstring = string_tc.lower()
 
     for key in dicti:
-        lowerstring = lowerstring.replace(key, dicti[key])
+        lowerstring = re.sub(r"\b%s\b" % key, dicti[key], lowerstring)
+
+    pattern = r'[0-9]'
+    lowerstring = re.sub(pattern, "X", lowerstring)
+
     return lowerstring
